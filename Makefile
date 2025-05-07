@@ -3,6 +3,8 @@ CFLAGS = -pedantic -std=c99 -Wall -Wextra
 
 BIN =\
      cat\
+     false\
+     true\
      yes
 
 all: ${BIN}
