@@ -28,6 +28,10 @@ main(int argc, char **argv)
 	}
 
 	for (int i = 1; i != argc; i++) {
+		if (!strcmp(argv[i], "-")) {
+			dump(stdin);
+			continue;
+		}
 		stream = fopen(argv[i], "r");
 		dump(stream);
 		fclose(stream);
