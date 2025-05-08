@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,20 +23,20 @@ main(int argc, char **argv)
 {
 	FILE *stream;
 
-	if (argc < 2) {
-		dump(stdin);
-		return EXIT_SUCCESS;
-	}
-
 	for (int i = 1; i != argc; i++) {
 		if (!strcmp(argv[i], "-")) {
 			dump(stdin);
 			continue;
 		}
 		stream = fopen(argv[i], "r");
+		if (stream == NULL) {
+			fprintf(stderr, "%s: '%s': %s\n", argv[0], argv[i], strerror(errno));
+			continue;
+		}
 		dump(stream);
 		fclose(stream);
 	}
-
+	if (argc < 2)
+		dump(stdin);
 	return EXIT_SUCCESS;
 }
