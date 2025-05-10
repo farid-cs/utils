@@ -22,6 +22,7 @@ int
 main(int argc, char **argv)
 {
 	FILE *stream;
+	int status = EXIT_SUCCESS;
 
 	for (int i = 1; i != argc; i++) {
 		if (!strcmp(argv[i], "-")) {
@@ -31,6 +32,7 @@ main(int argc, char **argv)
 		stream = fopen(argv[i], "r");
 		if (stream == NULL) {
 			fprintf(stderr, "%s: '%s': %s\n", argv[0], argv[i], strerror(errno));
+			status = EXIT_FAILURE;
 			continue;
 		}
 		dump(stream);
@@ -38,5 +40,5 @@ main(int argc, char **argv)
 	}
 	if (argc < 2)
 		dump(stdin);
-	return EXIT_SUCCESS;
+	return status;
 }
