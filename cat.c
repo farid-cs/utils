@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
-#define BUFSIZE 1024
+size_t BUFSIZE = 1024;
 
 static int
 dump(FILE *stream)
@@ -23,8 +24,19 @@ main(int argc, char **argv)
 {
 	FILE *stream;
 	int status = EXIT_SUCCESS;
+	int opt;
 
-	for (int i = 1; i != argc; i++) {
+	while ((opt = getopt(argc, argv, "u")) >= 0) {
+		switch (opt) {
+		case 'u':
+			BUFSIZE = 1;
+			break;
+		case '?':
+			fprintf(stderr, "usage: %s [-u] [file...]\n", argv[0]);
+			return EXIT_FAILURE;
+		}
+	}
+	for (int i = optind; i != argc; i++) {
 		if (!strcmp(argv[i], "-")) {
 			dump(stdin);
 			continue;
@@ -38,7 +50,7 @@ main(int argc, char **argv)
 		dump(stream);
 		fclose(stream);
 	}
-	if (argc < 2)
+	if (argc == optind)
 		dump(stdin);
 	return status;
 }

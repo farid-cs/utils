@@ -1,4 +1,5 @@
 CC = cc
+CPPFLAGS = -D_XOPEN_SOURCE=700
 CFLAGS = -pedantic -std=c99 -Wall -Wextra
 
 BIN =\
