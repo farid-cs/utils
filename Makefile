@@ -10,6 +10,9 @@ BIN =\
 
 all: ${BIN}
 
+${BIN}:
+	${CC} ${CPPFLAGS} ${CFLAGS} $@.c -o $@
+
 clean:
 	rm -f ${BIN}
 
