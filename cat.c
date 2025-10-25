@@ -6,8 +6,8 @@
 #include <string.h>
 #include <unistd.h>
 
-int pathc = 0;
-char **pathv = NULL;
+static int pathc = 0;
+static char **pathv = NULL;
 
 static bool
 parse_arguments(int argc, char **argv)
