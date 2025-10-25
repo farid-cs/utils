@@ -1,41 +1,40 @@
+#include <assert.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-size_t BUFSIZE = 1024;
-
-static int
+static void
 dump(FILE *stream)
 {
-	char buf[BUFSIZE];
-	size_t bytes;
+	int byte = 0;
 
-	while ((bytes = fread(buf, 1, BUFSIZE, stream)) == BUFSIZE)
-		fwrite(buf, 1, BUFSIZE, stdout);
-	if (feof(stream))
-		fwrite(buf, 1, bytes, stdout);
-	return 0;
+	assert(!setvbuf(stream, NULL, _IONBF, 0));
+	while ((byte = fgetc(stream)) != EOF)
+		if (fputc(byte, stdout) == EOF)
+			break;
+	assert(!ferror(stream));
+	assert(!ferror(stdout));
 }
 
 int
 main(int argc, char **argv)
 {
-	FILE *stream;
+	FILE *stream = NULL;
 	int status = EXIT_SUCCESS;
-	int opt;
+	int opt = 0;
 
 	while ((opt = getopt(argc, argv, "u")) >= 0) {
 		switch (opt) {
 		case 'u':
-			BUFSIZE = 1;
 			break;
 		case '?':
 			fprintf(stderr, "usage: %s [-u] [file...]\n", argv[0]);
 			return EXIT_FAILURE;
 		}
 	}
+	assert(!setvbuf(stdout, NULL, _IONBF, 0));
 	for (int i = optind; i != argc; i++) {
 		if (!strcmp(argv[i], "-")) {
 			dump(stdin);
@@ -48,7 +47,7 @@ main(int argc, char **argv)
 			continue;
 		}
 		dump(stream);
-		fclose(stream);
+		assert(!fclose(stream));
 	}
 	if (argc == optind)
 		dump(stdin);

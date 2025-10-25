@@ -11,9 +11,14 @@ BIN =\
 all: ${BIN}
 
 ${BIN}:
-	${CC} ${CPPFLAGS} ${CFLAGS} $@.c -o $@
+	${CC} ${CPPFLAGS} ${CFLAGS} $^ -o $@
+
+cat: cat.o
+false: false.o
+true: true.o
+yes: yes.o
 
 clean:
-	rm -f ${BIN}
+	rm -f *.o ${BIN}
 
 .PHONY: all clean
