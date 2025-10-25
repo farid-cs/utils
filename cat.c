@@ -16,8 +16,6 @@ parse_arguments(int argc, char **argv)
 
 	while ((opt = getopt(argc, argv, "u")) >= 0) {
 		switch (opt) {
-		case 'u':
-			break;
 		case '?':
 			fprintf(stderr, "usage: %s [-u] [file...]\n", argv[0]);
 			return false;
