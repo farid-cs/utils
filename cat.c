@@ -60,7 +60,7 @@ main(int argc, char **argv)
 		}
 		stream = fopen(pathv[i], "r");
 		if (stream == NULL) {
-			fprintf(stderr, "%s: '%s': %s\n", argv[0], argv[i], strerror(errno));
+			fprintf(stderr, "%s: '%s': %s\n", argv[0], pathv[i], strerror(errno));
 			status = EXIT_FAILURE;
 			continue;
 		}
