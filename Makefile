@@ -22,6 +22,6 @@ true: true.o
 yes: yes.o
 
 clean:
-	rm -f *.o ${BIN}
+	rm -f ${BIN:=.o} ${BIN}
 
 .PHONY: all clean
