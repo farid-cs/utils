@@ -45,7 +45,7 @@ dump(FILE *stream)
 	assert(!ferror(stdout));
 }
 
-int
+static int
 run()
 {
 	FILE *stream = nullptr;
