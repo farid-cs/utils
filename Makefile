@@ -11,7 +11,7 @@ BIN =\
 all: ${BIN}
 
 ${BIN}:
-	${CC} ${CFLAGS} ${CPPFLAGS} $^ -o $@
+	${CC} ${CFLAGS} ${CPPFLAGS} -o $@ $^
 
 .c.o:
 	${CC} ${CFLAGS} ${CPPFLAGS} -c -o $@ $^
