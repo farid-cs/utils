@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
+static char *argv0 = nullptr;
 static size_t pathc = 0;
 static char **pathv = nullptr;
 
@@ -15,6 +16,8 @@ parse_arguments(int argc, char **argv)
 
 	assert(argc > 0);
 	assert(argv != nullptr);
+	argv0 = argv[0];
+
 	while ((opt = getopt(argc, argv, "u")) >= 0) {
 		switch (opt) {
 		case '?':
@@ -43,13 +46,10 @@ dump(FILE *stream)
 }
 
 int
-main(int argc, char **argv)
+run()
 {
 	FILE *stream = nullptr;
 	int status = EXIT_SUCCESS;
-
-	if (!parse_arguments(argc, argv))
-		return EXIT_FAILURE;
 
 	assert(!setvbuf(stdout, nullptr, _IONBF, 0));
 	for (size_t i = 0; i != pathc; i++) {
@@ -59,7 +59,7 @@ main(int argc, char **argv)
 		}
 		stream = fopen(pathv[i], "r");
 		if (stream == nullptr) {
-			fprintf(stderr, "%s: '%s': %s\n", argv[0], pathv[i], strerror(errno));
+			fprintf(stderr, "%s: '%s': %s\n", argv0, pathv[i], strerror(errno));
 			status = EXIT_FAILURE;
 			continue;
 		}
@@ -70,4 +70,13 @@ main(int argc, char **argv)
 		dump(stdin);
 
 	return status;
+}
+
+int
+main(int argc, char **argv)
+{
+	if (!parse_arguments(argc, argv))
+		return EXIT_FAILURE;
+
+	return run();
 }
