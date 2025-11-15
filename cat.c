@@ -1,19 +1,20 @@
 #include <assert.h>
 #include <errno.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-static int pathc = 0;
-static char **pathv = NULL;
+static size_t pathc = 0;
+static char **pathv = nullptr;
 
 static bool
 parse_arguments(int argc, char **argv)
 {
 	int opt = 0;
 
+	assert(argc > 0);
+	assert(argv != nullptr);
 	while ((opt = getopt(argc, argv, "u")) >= 0) {
 		switch (opt) {
 		case '?':
@@ -22,7 +23,7 @@ parse_arguments(int argc, char **argv)
 		}
 	}
 
-	pathc = argc - optind;
+	pathc = (size_t)(argc - optind);
 	pathv = argv + optind;
 
 	return true;
@@ -33,7 +34,7 @@ dump(FILE *stream)
 {
 	int byte = 0;
 
-	assert(!setvbuf(stream, NULL, _IONBF, 0));
+	assert(!setvbuf(stream, nullptr, _IONBF, 0));
 	while ((byte = fgetc(stream)) != EOF)
 		if (fputc(byte, stdout) == EOF)
 			break;
@@ -44,20 +45,20 @@ dump(FILE *stream)
 int
 main(int argc, char **argv)
 {
-	FILE *stream = NULL;
+	FILE *stream = nullptr;
 	int status = EXIT_SUCCESS;
 
 	if (!parse_arguments(argc, argv))
 		return EXIT_FAILURE;
 
-	assert(!setvbuf(stdout, NULL, _IONBF, 0));
-	for (int i = 0; i != pathc; i++) {
+	assert(!setvbuf(stdout, nullptr, _IONBF, 0));
+	for (size_t i = 0; i != pathc; i++) {
 		if (!strcmp(pathv[i], "-")) {
 			dump(stdin);
 			continue;
 		}
 		stream = fopen(pathv[i], "r");
-		if (stream == NULL) {
+		if (stream == nullptr) {
 			fprintf(stderr, "%s: '%s': %s\n", argv[0], pathv[i], strerror(errno));
 			status = EXIT_FAILURE;
 			continue;

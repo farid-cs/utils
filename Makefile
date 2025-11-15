@@ -1,6 +1,6 @@
 CC = cc
 CPPFLAGS = -D_XOPEN_SOURCE=700
-CFLAGS = -pedantic -std=c99 -Wall -Wextra
+CFLAGS = -pedantic -std=c23 -Wall -Wextra -Wconversion
 
 BIN =\
      cat\
