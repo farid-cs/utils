@@ -6,6 +6,7 @@ BIN =\
      cat\
      false\
      true\
+     uname\
      yes
 
 all: ${BIN}
@@ -19,6 +20,7 @@ ${BIN}:
 cat: cat.o
 false: false.o
 true: true.o
+uname: uname.o
 yes: yes.o
 
 clean:
