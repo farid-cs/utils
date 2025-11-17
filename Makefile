@@ -6,6 +6,7 @@ BIN =\
      cat\
      false\
      true\
+     tty\
      uname\
      yes
 
@@ -20,6 +21,7 @@ ${BIN}:
 cat: cat.o
 false: false.o
 true: true.o
+tty: tty.o
 uname: uname.o
 yes: yes.o
 
