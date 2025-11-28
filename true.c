@@ -1,7 +1,7 @@
-#include <stdlib.h>
+constexpr int TRUE = 0;
 
 int
 main(void)
 {
-	return EXIT_SUCCESS;
+	return TRUE;
 }
