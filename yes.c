@@ -1,14 +1,23 @@
 #include <assert.h>
 #include <stdio.h>
 
+static void
+run(const char *expletive)
+{
+	if (!expletive)
+		expletive = "y";
+	while (true)
+		printf("%s\n", expletive);
+}
+
 int
 main(int argc, char **argv)
 {
-	const char *s = "y";
+	const char *expletive = {};
 
-	assert(argv != nullptr);
+	assert(argv);
 	if (argc > 1)
-		s = argv[1];
-	for (;;)
-		printf("%s\n", s);
+		expletive = argv[1];
+
+	run(expletive);
 }
