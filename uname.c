@@ -1,11 +1,18 @@
 #include <sys/utsname.h>
 
 #include <assert.h>
+#include <errno.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
+enum {
+	ExitSuccess,
+	ExitFailure,
+};
+
 typedef struct Param {
+	char *argv0;
 	bool a;
 	bool m;
 	bool n;
@@ -21,6 +28,7 @@ parse_arguments(Param *param, int argc, char **argv)
 
 	assert(argc > 0);
 	assert(argv != nullptr);
+	param->argv0 = argv[0];
 
 	while ((opt = getopt(argc, argv, "amnrsv")) >= 0) {
 		switch (opt) {
@@ -51,13 +59,20 @@ parse_arguments(Param *param, int argc, char **argv)
 	return true;
 }
 
-static int
-run(Param param)
+int
+main(int argc, char **argv)
 {
+	Param param = {0};
 	struct utsname utsname = {0};
 	int count = 0;
 
-	assert(uname(&utsname) >= 0);
+	if (!parse_arguments(&param, argc, argv))
+		return ExitFailure;
+
+	if (uname(&utsname) < 0) {
+		fprintf(stderr, "%s: %s\n", param.argv0, strerror(errno));
+		return ExitFailure;
+	}
 
 	if (param.a) {
 		param.m = true;
@@ -101,16 +116,5 @@ run(Param param)
 		printf("%s", utsname.machine);
 	putchar('\n');
 
-	return EXIT_SUCCESS;
-}
-
-int
-main(int argc, char **argv)
-{
-	Param param = {0};
-
-	if (!parse_arguments(&param, argc, argv))
-		return EXIT_FAILURE;
-
-	return run(param);
+	return ExitSuccess;
 }
