@@ -47,40 +47,33 @@ dump(FILE *stream)
 	assert(!ferror(stdout));
 }
 
-static int
-run(Param *param)
+int
+main(int argc, char **argv)
 {
+	Param param = {0};
 	FILE *stream = nullptr;
 	int status = EXIT_SUCCESS;
 
+	if (!parse_arguments(&param, argc, argv))
+		return EXIT_FAILURE;
+
 	assert(!setvbuf(stdout, nullptr, _IONBF, 0));
-	for (size_t i = 0; i != param->pathc; i++) {
-		if (!strcmp(param->pathv[i], "-")) {
+	for (size_t i = 0; i != param.pathc; i++) {
+		if (!strcmp(param.pathv[i], "-")) {
 			dump(stdin);
 			continue;
 		}
-		stream = fopen(param->pathv[i], "r");
+		stream = fopen(param.pathv[i], "r");
 		if (stream == nullptr) {
-			fprintf(stderr, "%s: '%s': %s\n", param->argv0, param->pathv[i], strerror(errno));
+			fprintf(stderr, "%s: '%s': %s\n", param.argv0, param.pathv[i], strerror(errno));
 			status = EXIT_FAILURE;
 			continue;
 		}
 		dump(stream);
 		assert(!fclose(stream));
 	}
-	if (param->pathc == 0)
+	if (param.pathc == 0)
 		dump(stdin);
 
 	return status;
-}
-
-int
-main(int argc, char **argv)
-{
-	Param param = {0};
-
-	if (!parse_arguments(&param, argc, argv))
-		return EXIT_FAILURE;
-
-	return run(&param);
 }
