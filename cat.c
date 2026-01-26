@@ -39,7 +39,6 @@ dump(FILE *stream)
 {
 	int byte = 0;
 
-	assert(!setvbuf(stream, nullptr, _IONBF, 0));
 	while ((byte = fgetc(stream)) != EOF)
 		if (fputc(byte, stdout) == EOF)
 			break;
