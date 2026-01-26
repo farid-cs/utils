@@ -24,15 +24,14 @@ main(int argc, char **argv)
 	const char *argv0 = parse_arguments(argc, argv);
 	const char *tty = ttyname(STDIN_FILENO);
 
-	if (tty == nullptr) {
-		if (errno != ENOTTY) {
-			fprintf(stderr, "%s: %s\n", argv0, strerror(errno));
-			return ExitFailure;
-		}
+	if (tty) {
+		printf("%s\n", tty);
+		return ExitSuccess;
+	}
+	if (errno == ENOTTY) {
 		printf("not a tty\n");
 		return ExitNotTty;
 	}
-	printf("%s\n", tty);
-
-	return ExitSuccess;
+	fprintf(stderr, "%s: %s\n", argv0, strerror(errno));
+	return ExitFailure;
 }
