@@ -1,7 +1,7 @@
-constexpr int TRUE = 0;
+constexpr int EXIT_STATUS = 0;
 
 int
 main(void)
 {
-	return TRUE;
+	return EXIT_STATUS;
 }
