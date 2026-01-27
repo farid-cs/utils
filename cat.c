@@ -35,7 +35,7 @@ parse_arguments(Param *param, int argc, char **argv)
 }
 
 static void
-dump(FILE *stream)
+handle_stream(FILE *stream)
 {
 	int byte = 0;
 
@@ -46,11 +46,23 @@ dump(FILE *stream)
 	assert(!ferror(stdout));
 }
 
+static bool
+handle_file(const char *path)
+{
+	FILE *stream = fopen(path, "r");
+
+	if (stream == nullptr)
+		return false;
+
+	handle_stream(stream);
+	assert(!fclose(stream));
+	return true;
+}
+
 int
 main(int argc, char **argv)
 {
 	Param param = {0};
-	FILE *stream = nullptr;
 	int status = EXIT_SUCCESS;
 
 	if (!parse_arguments(&param, argc, argv))
@@ -59,20 +71,14 @@ main(int argc, char **argv)
 	assert(!setvbuf(stdout, nullptr, _IONBF, 0));
 	for (size_t i = 0; i != param.pathc; i++) {
 		if (!strcmp(param.pathv[i], "-")) {
-			dump(stdin);
-			continue;
-		}
-		stream = fopen(param.pathv[i], "r");
-		if (stream == nullptr) {
+			handle_stream(stdin);
+		} else if (!handle_file(param.pathv[i])) {
 			fprintf(stderr, "%s: '%s': %s\n", param.argv0, param.pathv[i], strerror(errno));
 			status = EXIT_FAILURE;
-			continue;
 		}
-		dump(stream);
-		assert(!fclose(stream));
 	}
 	if (param.pathc == 0)
-		dump(stdin);
+		handle_stream(stdin);
 
 	return status;
 }
