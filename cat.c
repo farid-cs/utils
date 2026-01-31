@@ -15,7 +15,7 @@ typedef struct Param {
 static bool
 parse_arguments(Param *param, int argc, char **argv)
 {
-	int opt = 0;
+	int opt;
 
 	assert(argc > 0);
 	assert(argv);
@@ -76,7 +76,7 @@ handle_file(const char *path)
 int
 main(int argc, char **argv)
 {
-	Param param = {0};
+	Param param;
 	int status = EXIT_SUCCESS;
 
 	if (!parse_arguments(&param, argc, argv))
