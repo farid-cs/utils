@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,7 +18,7 @@ parse_arguments(Param *param, int argc, char **argv)
 	int opt = 0;
 
 	assert(argc > 0);
-	assert(argv != nullptr);
+	assert(argv);
 	param->argv0 = argv[0];
 
 	while ((opt = getopt(argc, argv, "u")) >= 0) {
@@ -35,27 +36,40 @@ parse_arguments(Param *param, int argc, char **argv)
 }
 
 static void
-handle_stream(FILE *stream)
+write_all(int fd, const unsigned char *buf, size_t size)
 {
-	int byte = 0;
+	ssize_t nwrite;
 
-	while ((byte = fgetc(stream)) != EOF)
-		if (fputc(byte, stdout) == EOF)
-			break;
-	assert(!ferror(stream));
-	assert(!ferror(stdout));
+	while (size > 0 && (nwrite = write(fd, buf, size)) > 0) {
+		buf += (size_t)nwrite;
+		size -= (size_t)nwrite;
+	}
+	assert(nwrite >= 0);
+}
+
+static void
+handle_fd(int fd)
+{
+	unsigned char buf[BUFSIZ];
+	ssize_t nread;
+
+	while ((nread = read(fd, buf, BUFSIZ)) > 0)
+		write_all(STDOUT_FILENO, buf, (size_t)nread);
+
+	assert(nread == 0);
 }
 
 static bool
 handle_file(const char *path)
 {
-	FILE *stream = fopen(path, "r");
+	int fd = open(path, O_RDONLY);
 
-	if (stream == nullptr)
+	if (fd < 0)
 		return false;
 
-	handle_stream(stream);
-	assert(!fclose(stream));
+	handle_fd(fd);
+	assert(close(fd) >= 0);
+
 	return true;
 }
 
@@ -68,17 +82,16 @@ main(int argc, char **argv)
 	if (!parse_arguments(&param, argc, argv))
 		return EXIT_FAILURE;
 
-	assert(!setvbuf(stdout, nullptr, _IONBF, 0));
 	for (size_t i = 0; i != param.pathc; i++) {
 		if (!strcmp(param.pathv[i], "-")) {
-			handle_stream(stdin);
+			handle_fd(STDIN_FILENO);
 		} else if (!handle_file(param.pathv[i])) {
 			fprintf(stderr, "%s: '%s': %s\n", param.argv0, param.pathv[i], strerror(errno));
 			status = EXIT_FAILURE;
 		}
 	}
 	if (param.pathc == 0)
-		handle_stream(stdin);
+		handle_fd(STDIN_FILENO);
 
 	return status;
 }
