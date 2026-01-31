@@ -24,11 +24,17 @@ typedef struct Param {
 static bool
 parse_arguments(Param *param, int argc, char **argv)
 {
-	int opt = 0;
+	int opt;
 
 	assert(argc > 0);
 	assert(argv != nullptr);
 	param->argv0 = argv[0];
+	param->a = false;
+	param->m = false;
+	param->n = false;
+	param->r = false;
+	param->s = false;
+	param->v = false;
 
 	while ((opt = getopt(argc, argv, "amnrsv")) >= 0) {
 		switch (opt) {
@@ -62,8 +68,8 @@ parse_arguments(Param *param, int argc, char **argv)
 int
 main(int argc, char **argv)
 {
-	Param param = {0};
-	struct utsname utsname = {0};
+	Param param;
+	struct utsname utsname;
 	int count = 0;
 
 	if (!parse_arguments(&param, argc, argv))
@@ -82,38 +88,32 @@ main(int argc, char **argv)
 		param.v = true;		
 	}
 
-	count += param.m;
-	count += param.n;
-	count += param.r;
-	count += param.s;
-	count += param.v;
-
-	if (count == 0) {
-		param.s = true;
-		count = 1;
-	}
 	if (param.s) {
 		printf("%s", utsname.sysname);
-		if (--count)
-			putchar(' ');
+		count += 1;
 	}
 	if (param.n) {
-		printf("%s", utsname.nodename);
-		if (--count)
+		if (count++)
 			putchar(' ');
+		printf("%s", utsname.nodename);
 	}
 	if (param.r) {
-		printf("%s", utsname.release);
-		if (--count)
+		if (count++)
 			putchar(' ');
+		printf("%s", utsname.release);
 	}
 	if (param.v) {
-		printf("%s", utsname.version);
-		if (--count)
+		if (count++)
 			putchar(' ');
+		printf("%s", utsname.version);
 	}
-	if (param.m)
+	if (param.m) {
+		if (count++)
+			putchar(' ');
 		printf("%s", utsname.machine);
+	}
+	if (count == 0)
+		printf("%s", utsname.sysname);
 	putchar('\n');
 
 	return ExitSuccess;
