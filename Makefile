@@ -7,8 +7,7 @@ BIN =\
      false\
      true\
      tty\
-     uname\
-     yes
+     uname
 
 all: ${BIN}
 
@@ -23,7 +22,6 @@ false: false.o
 true: true.o
 tty: tty.o
 uname: uname.o
-yes: yes.o
 
 clean:
 	rm -f ${BIN:=.o} ${BIN}
