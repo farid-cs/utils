@@ -35,7 +35,7 @@ parse_arguments(Param *param, int argc, char **argv)
 	return true;
 }
 
-static void
+static bool
 write_all(int fd, const unsigned char *buf, size_t size)
 {
 	ssize_t nwrite;
@@ -44,7 +44,7 @@ write_all(int fd, const unsigned char *buf, size_t size)
 		buf += (size_t)nwrite;
 		size -= (size_t)nwrite;
 	}
-	assert(nwrite >= 0);
+	return size == 0;
 }
 
 static void
@@ -54,7 +54,7 @@ handle_fd(int fd)
 	ssize_t nread;
 
 	while ((nread = read(fd, buf, BUFSIZ)) > 0)
-		write_all(STDOUT_FILENO, buf, (size_t)nread);
+		assert(write_all(STDOUT_FILENO, buf, (size_t)nread));
 
 	assert(nread == 0);
 }
